@@ -15,7 +15,7 @@ def extract_slate_info(image_path):
     img = cv2.imread(str(image_path))
     
     if img is None:
-        print(f"❌ Could not read {image_path}")
+        print(f"Could not read {image_path}")
         return None
     
     # Run OCR
@@ -24,7 +24,7 @@ def extract_slate_info(image_path):
     # Combine all text
     full_text = ' '.join([text for (bbox, text, conf) in results])
     
-    print(f"\n📸 Image: {image_path.name}")
+    print(f"\nImage: {image_path.name}")
     print(f"Raw OCR: {full_text}")
     
     # Try to parse scene/shot/take
@@ -41,16 +41,16 @@ def extract_slate_info(image_path):
         shot = scene_match.group(2) if scene_match.group(2) else ''
         parsed_data['scene'] = scene_num
         parsed_data['shot'] = shot
-        print(f"✅ Parsed: Scene {scene_num}{shot}")
+        print(f"Parsed: Scene {scene_num}{shot}")
     else:
-        print("❌ Could not find scene number")
+        print("Could not find scene number")
     
     if take_match:
         take_num = take_match.group(1)
         parsed_data['take'] = take_num
-        print(f"✅ Parsed: Take {take_num}")
+        print(f"Parsed: Take {take_num}")
     else:
-        print("❌ Could not find take number")
+        print("Could not find take number")
     
     return parsed_data
 
@@ -59,14 +59,14 @@ if __name__ == "__main__":
     slate_folder = Path("../test_data/slate_images")
     
     if not slate_folder.exists():
-        print(f"❌ Folder not found: {slate_folder}")
+        print(f"Folder not found: {slate_folder}")
         print("Please create test_data/slate_images/ and add some slate images!")
         exit(1)
     
     image_files = list(slate_folder.glob("*.jpg")) + list(slate_folder.glob("*.png"))
     
     if not image_files:
-        print("❌ No images found in test_data/slate_images/")
+        print("No images found in test_data/slate_images/")
         print("Please add some .jpg or .png slate images to test!")
         exit(1)
     

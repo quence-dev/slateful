@@ -1,4 +1,4 @@
-# Slate Scanner
+# Slateful
 
 AI-powered slate detection and clip renaming plugin for Adobe Premiere Pro.
 
