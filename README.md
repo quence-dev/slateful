@@ -16,27 +16,6 @@ AI-powered slate detection and clip renaming plugin for Adobe Premiere Pro.
 
 Currently building the manual slate marking feature.
 
-## Development Setup
-
-### Prerequisites
-- Python 3.9+
-- Adobe Premiere Pro 2022+
-- Node.js 16+
-
-### Installation
-
-```bash
-# Clone the repo
-git clone https://github.com/YOUR-USERNAME/slate-scanner.git
-cd slate-scanner
-
-# Install Python dependencies
-pip install -r requirements.txt
-
-# Test OCR (coming soon)
-python python/test_ocr.py
-```
-
 ## Roadmap
 
 - [x] Project setup
