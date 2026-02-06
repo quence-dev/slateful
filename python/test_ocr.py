@@ -34,7 +34,7 @@ def preprocess_image(img):
     
     return thresh
 
-def extract_slate_info(image_path):
+def extract_slate_info(image_path, save_debug=False):
   """Test OCR on a single slate image"""
   
   # Read image
@@ -45,30 +45,14 @@ def extract_slate_info(image_path):
     return None
   
   # Run OCR
-  # results = reader.readtext(img)
-
-  # Try both original and preprocessed
-  # print("\n--- Original Image ---")
-  results_original = reader.readtext(img)
-  text_original = ' '.join([text for (bbox, text, conf) in results_original])
-  print(f"Raw OCR: {text_original}")
-
-  # print("\n--- Preprocessed Image ---")
-  # preprocessed = preprocess_image(img)
-  # # # SAVE PREPROCESSED IMAGE TO VIEW IT
-  # # output_path = f"test_data/slate_images/preprocessed_{image_path.name}"
-  # # cv2.imwrite(output_path, preprocessed)
-  # # #####
-  # results_preprocessed = reader.readtext(preprocessed)
-  # text_preprocessed = ' '.join([text for (bbox, text, conf) in results_preprocessed])
-  # print(f"Raw OCR: {text_preprocessed}")
+  results = reader.readtext(img)
+  full_text = ' '.join([text for (bbox, text, conf) in results])
+  print(f"\nRaw OCR: {full_text}")
   
-  # Combine all text
-  # full_text = ' '.join([text for (bbox, text, conf) in results])
-  # full_text = text_original + ' ' + text_preprocessed
-  full_text = text_original
-  
-  # print(f"Raw OCR: {full_text}")
+  if save_debug:
+    print("\n--- All detected text: ---")
+    for (bbox, text, conf) in results:
+      print(f"  '{text}' (confidence: {conf:.2f})")
   
   # Try to parse scene/shot/take
   scene_pattern = r'(?:Scene|SC|S|scene|SCENE)[\s:\.#]*(\d+)\s*([A-Z]+(?:-\d+)?)?'
@@ -79,6 +63,7 @@ def extract_slate_info(image_path):
   standalone_take = r'\b[Tt](?:ake)?[\s:]*(\d+)\b'
 
   parsed_data = {}
+  
   scene_match = re.search(scene_pattern, full_text, re.IGNORECASE)
   take_match = re.search(take_pattern, full_text, re.IGNORECASE)
 
@@ -106,12 +91,6 @@ def extract_slate_info(image_path):
       print(f"Parsed (standalone): Take {parsed_data['take']}")
     else:
       print("Could not find take number")
-
-  # # Confidence values for debugging
-  # print("\n--- Detected Text ---")
-  # for (bbox, text, conf) in results:
-  #     # if conf > 0.7: - uncomment to see high confidence values
-  #     print(f"  '{text}' (confidence: {conf:.2f})")
   
   return parsed_data
 
@@ -169,10 +148,10 @@ if __name__ == "__main__":
         continue
 
       print(f"\n{filename}")
-      print(f"Expected: Scene {expected.get('scene', '?')}{expected.get('shot', '')}, Take {expected.get('take', '?')}")
+      # print(f"Expected: Scene {expected.get('scene', '?')}{expected.get('shot', '')}, Take {expected.get('take', '?')}")
 
       predicted = extract_slate_info(img_file)
-      print(f"Detected: Scene {predicted.get('scene', '?')}{predicted.get('shot', '')}, Take {predicted.get('take', '?')}")
+      # print(f"Detected: Scene {predicted.get('scene', '?')}{predicted.get('shot', '')}, Take {predicted.get('take', '?')}")
 
       comparison = compare_results(predicted, expected)
 
