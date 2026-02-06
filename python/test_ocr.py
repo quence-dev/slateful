@@ -41,7 +41,7 @@ def extract_slate_info(image_path):
         shot = scene_match.group(2) if scene_match.group(2) else ''
         parsed_data['scene'] = scene_num
         parsed_data['shot'] = shot
-        print(f"Parsed: Scene {scene_num}{shot}")
+        print(f"Parsed: Scene {scene_num}, Shot {shot}")
     else:
         print("Could not find scene number")
     
@@ -56,7 +56,7 @@ def extract_slate_info(image_path):
 
 if __name__ == "__main__":
     # Test on slate images
-    slate_folder = Path("../test_data/slate_images")
+    slate_folder = Path("test_data/slate_images")
     
     if not slate_folder.exists():
         print(f"Folder not found: {slate_folder}")
