@@ -53,44 +53,31 @@ def extract_slate_info(image_path, save_debug=False):
     print("\n--- All detected text: ---")
     for (bbox, text, conf) in results:
       print(f"  '{text}' (confidence: {conf:.2f})")
-  
-  # Try to parse scene/shot/take
-  scene_pattern = r'(?:Scene|SC|S|scene|SCENE)[\s:\.#]*(\d+)\s*([A-Z]+(?:-\d+)?)?'
-  take_pattern = r'(?:Take|TK|T|take|TAKE)[\s:\.#]*(\d+)'
 
-  # Also try just finding standalone patterns (in case "Scene"/"Take" are vertical/separate)
-  standalone_scene = r'\b(\d+)([A-Z]+(?:-\d+)?)\b'  # Matches "1A", "95B"
-  standalone_take = r'\b[Tt](?:ake)?[\s:]*(\d+)\b'
+  scene_pattern = r'\b(\d+)([A-Z]+(?:-\d+)?)\b'
+  take_pattern  = r'\b([1-9][0-9]?)\b(?!\s*[A-Za-z-])'
 
   parsed_data = {}
   
   scene_match = re.search(scene_pattern, full_text, re.IGNORECASE)
-  take_match = re.search(take_pattern, full_text, re.IGNORECASE)
+  remaining = full_text
 
   if scene_match:
     parsed_data['scene'] = scene_match.group(1)
-    parsed_data['shot'] = scene_match.group(2) if scene_match.group(2) else ''
+    parsed_data['shot'] = scene_match.group(2) or ''
+    start, end = scene_match.span()
+    remaining = full_text[:start] + ' ' + full_text[end:]
     print(f"Parsed: Scene {parsed_data['scene']}{parsed_data['shot']}")
   else:
-    # Try standalone pattern (number + letter together)
-    standalone_match = re.search(standalone_scene, full_text)
-    if standalone_match:
-      parsed_data['scene'] = standalone_match.group(1)
-      parsed_data['shot'] = standalone_match.group(2)
-      print(f"Parsed (standalone): Scene {parsed_data['scene']}{parsed_data['shot']}")
-    else:
-      print("Could not find scene/shot number")
+    print("Could not find scene/shot number")
   
+  print(f"\n Checking in: {remaining}")
+  take_match = re.search(take_pattern, remaining, re.IGNORECASE)
   if take_match:
     parsed_data['take'] = take_match.group(1)
     print(f"Parsed: Take {parsed_data['take']}")
   else:
-    standalone_match_take = re.search(standalone_take, full_text)
-    if standalone_match_take:
-      parsed_data['take'] = standalone_match_take.group(1)
-      print(f"Parsed (standalone): Take {parsed_data['take']}")
-    else:
-      print("Could not find take number")
+    print("Could not find take number")
   
   return parsed_data
 
