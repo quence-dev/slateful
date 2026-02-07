@@ -1,5 +1,23 @@
 # OCR Testing Results
 
+
+## Test Date: 02-06-2026 - 004
+
+Tested 10 slate images with EasyOCR. Used the preprocessor this time, as well as adjusted the shot letter to be parsed as lower- or upper-case.
+
+### Results
+- Scene number: 8/10 correct (80%)
+- Shot letter: 8/10 correct (80%)
+- Take number: 2/10 correct (20%)
+- Perfect matches: 2/10 (20%)
+
+### Issues
+- Inconsistent parsing with takes
+
+### Conclusions
+- Will now move to training either image recognition model (since OCR is a bit better when it knows where to look) or refine handwriting parsing with custom OCR model.
+
+
 ## Test Date: 02-06-2026 - 003
 
 Tested 10 slate images with EasyOCR. This time, I cropped the images directly to the areas where the scene and takes are, to see if the issue was with OCR or something else. I also improved the parsing by making it only look for a take after the scene/shot were removed from the text. Preprocessing was a bust and made most of the images completely illegible.

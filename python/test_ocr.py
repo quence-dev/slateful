@@ -11,28 +11,32 @@ import numpy as np
 reader = easyocr.Reader(['en'])
 
 def preprocess_image(img):
-    """Enhance image for better OCR"""
-    
-    # Convert to grayscale
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    
-    # Increase contrast using CLAHE (Contrast Limited Adaptive Histogram Equalization)
-    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8,8))
-    contrast = clahe.apply(gray)
-    
-    # Denoise
-    denoised = cv2.fastNlMeansDenoising(contrast, h=10)
-    
-    # Sharpen
-    kernel = np.array([[-1,-1,-1],
-                       [-1, 9,-1],
-                       [-1,-1,-1]])
-    sharpened = cv2.filter2D(denoised, -1, kernel)
-    
-    # Threshold to make text stand out
-    _, thresh = cv2.threshold(sharpened, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    
-    return thresh
+  """Lighter preprocessing for OCR: mild contrast and subtle sharpening,
+  without any added blur or heavy denoising. Returns grayscale image
+  optimized for OCR."""
+
+  # Convert to grayscale
+  gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+  # Mild contrast using CLAHE (lower clipLimit)
+  clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+  contrast = clahe.apply(gray)
+
+  # Subtle sharpening using a small kernel (no blurring step)
+  kernel = np.array([[0, -1, 0],
+                    [-1, 5, -1],
+                    [0, -1, 0]], dtype=np.float32)
+  sharpened = cv2.filter2D(contrast, -1, kernel)
+
+  # Slight gamma correction to lift midtones (helps dark text)
+  gamma = 1.03
+  look_up_table = np.array([((i / 255.0) ** (1.0 / gamma)) * 255 for i in range(256)]).astype('uint8')
+  corrected = cv2.LUT(sharpened, look_up_table)
+
+  # Normalize to full 0-255 range to help OCR contrast
+  normalized = cv2.normalize(corrected, None, 0, 255, cv2.NORM_MINMAX)
+
+  return normalized
 
 def extract_slate_info(image_path, save_debug=False):
   """Test OCR on a single slate image"""
@@ -48,6 +52,18 @@ def extract_slate_info(image_path, save_debug=False):
   results = reader.readtext(img)
   full_text = ' '.join([text for (bbox, text, conf) in results])
   print(f"\nRaw OCR: {full_text}")
+
+  # print("\n--- Preprocessed Image ---")
+  # preprocessed = preprocess_image(img)
+  # # SAVE PREPROCESSED IMAGE TO VIEW IT
+  # output_path = f"test_data/slate_images/preprocessed_{image_path.name}"
+  # cv2.imwrite(output_path, preprocessed)
+  # #####
+  # results_preprocessed = reader.readtext(preprocessed)
+  # text_preprocessed = ' '.join([text for (bbox, text, conf) in results_preprocessed])
+  # print(f"Raw OCR: {text_preprocessed}")
+
+  # full_text = text_preprocessed
   
   if save_debug:
     print("\n--- All detected text: ---")
@@ -64,7 +80,8 @@ def extract_slate_info(image_path, save_debug=False):
 
   if scene_match:
     parsed_data['scene'] = scene_match.group(1)
-    parsed_data['shot'] = scene_match.group(2) or ''
+    shot_val = scene_match.group(2) or ''
+    parsed_data['shot'] = shot_val.upper()
     start, end = scene_match.span()
     remaining = full_text[:start] + ' ' + full_text[end:]
     print(f"Parsed: Scene {parsed_data['scene']}{parsed_data['shot']}")
@@ -128,6 +145,7 @@ if __name__ == "__main__":
     }
 
     for filename, expected in labels.items():
+      # preproc_name = f"preprocessed_{filename}"
       img_file = slate_folder / filename
 
       if not img_file.exists():
@@ -172,7 +190,7 @@ if __name__ == "__main__":
     print(f"Perfect matches: {stats['full_match']}/{stats['total']} ({stats['full_match']/stats['total']*100:.0f}%)")
 
     # image_files = list(slate_folder.glob("*.jpg")) + list(slate_folder.glob("*.png"))
-    # # Preprocessed only:
+    # # # Preprocessed only:
     # # image_files = list(slate_folder.glob("preprocessed_*.jpg")) + list(slate_folder.glob("preprocessed_*.png"))
     
     # if not image_files:
