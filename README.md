@@ -19,7 +19,7 @@ Currently building the manual slate marking feature.
 ## Roadmap
 
 - [x] Project setup
-- [ ] OCR testing and validation
+- [x] OCR testing and validation
 - [ ] CEP extension skeleton
 - [ ] Manual slate marking (v1.0)
 - [ ] Auto-detection (v2.0)
