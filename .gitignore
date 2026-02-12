@@ -5,8 +5,7 @@ __pycache__/
 *.so
 .Python
 env/
-venv_training/
-venv_ocr/
+venv_*/
 ENV/
 *.egg-info/
 
