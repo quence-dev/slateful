@@ -5,7 +5,8 @@ __pycache__/
 *.so
 .Python
 env/
-venv/
+venv_training/
+venv_ocr/
 ENV/
 *.egg-info/
 
@@ -30,7 +31,8 @@ test_data/slate_images/*
 *.pt
 *.pth
 models/
-training_data/
+training_data/*
+!training_data/yolo11n-obb_model/.gitkeep
 
 # API keys or secrets (just in case)
 .env
