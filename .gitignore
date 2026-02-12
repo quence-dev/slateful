@@ -30,6 +30,7 @@ test_data/slate_images/*
 *.pt
 *.pth
 models/
+training_data/
 
 # API keys or secrets (just in case)
 .env

@@ -125,98 +125,99 @@ def compare_results(predicted, expected):
   return results
 
 if __name__ == "__main__":
-    slate_folder = Path("test_data/slate_images")
+    # slate_folder = Path("test_data/slate_images")
+    slate_folder = Path("training_data/raw_slates")
     
     if not slate_folder.exists():
         print(f"Folder not found: {slate_folder}")
         print("Please create test_data/slate_images/ and add some slate images!")
         exit(1)
 
-    labels = load_labels()
-    print(f"Testing {len(labels)} labeled images\n")
-    print("="*70)
+    # labels = load_labels()
+    # print(f"Testing {len(labels)} labeled images\n")
+    # print("="*70)
     
-    stats = {
-      'total': 0,
-      'scene_correct': 0,
-      'shot_correct': 0,
-      'take_correct': 0,
-      'full_match': 0
-    }
+    # stats = {
+    #   'total': 0,
+    #   'scene_correct': 0,
+    #   'shot_correct': 0,
+    #   'take_correct': 0,
+    #   'full_match': 0
+    # }
 
-    for filename, expected in labels.items():
-      # preproc_name = f"preprocessed_{filename}"
-      img_file = slate_folder / filename
+    # for filename, expected in labels.items():
+    #   # preproc_name = f"preprocessed_{filename}"
+    #   img_file = slate_folder / filename
 
-      if not img_file.exists():
-        print(f"Image not found: {filename}")
-        continue
+    #   if not img_file.exists():
+    #     print(f"Image not found: {filename}")
+    #     continue
 
-      print(f"\n{filename}")
-      # print(f"Expected: Scene {expected.get('scene', '?')}{expected.get('shot', '')}, Take {expected.get('take', '?')}")
+    #   print(f"\n{filename}")
+    #   # print(f"Expected: Scene {expected.get('scene', '?')}{expected.get('shot', '')}, Take {expected.get('take', '?')}")
 
-      predicted = extract_slate_info(img_file)
-      # print(f"Detected: Scene {predicted.get('scene', '?')}{predicted.get('shot', '')}, Take {predicted.get('take', '?')}")
+    #   predicted = extract_slate_info(img_file)
+    #   # print(f"Detected: Scene {predicted.get('scene', '?')}{predicted.get('shot', '')}, Take {predicted.get('take', '?')}")
 
-      comparison = compare_results(predicted, expected)
+    #   comparison = compare_results(predicted, expected)
 
-      # Show results
-      scene_status = "✅" if comparison['scene_correct'] else "❌"
-      shot_status = "✅" if comparison['shot_correct'] else "❌"
-      take_status = "✅" if comparison['take_correct'] else "❌"
+    #   # Show results
+    #   scene_status = "✅" if comparison['scene_correct'] else "❌"
+    #   shot_status = "✅" if comparison['shot_correct'] else "❌"
+    #   take_status = "✅" if comparison['take_correct'] else "❌"
       
-      print(f"  Scene: {scene_status}  Shot: {shot_status}  Take: {take_status}")
-      if comparison['full_match']:
-        print(" PERFECT MATCH")
+    #   print(f"  Scene: {scene_status}  Shot: {shot_status}  Take: {take_status}")
+    #   if comparison['full_match']:
+    #     print(" PERFECT MATCH")
 
-      # Update stats
-      stats['total'] += 1
-      if comparison['scene_correct']:
-        stats['scene_correct'] += 1
-      if comparison['shot_correct']:
-        stats['shot_correct'] += 1
-      if comparison['take_correct']:
-        stats['take_correct'] += 1
-      if comparison['full_match']:
-        stats['full_match'] += 1
+    #   # Update stats
+    #   stats['total'] += 1
+    #   if comparison['scene_correct']:
+    #     stats['scene_correct'] += 1
+    #   if comparison['shot_correct']:
+    #     stats['shot_correct'] += 1
+    #   if comparison['take_correct']:
+    #     stats['take_correct'] += 1
+    #   if comparison['full_match']:
+    #     stats['full_match'] += 1
         
-      print("-" * 70)
+    #   print("-" * 70)
     
-    # Final stats
-    print(f"\nFINAL RESULTS")
-    print(f"Scene accuracy: {stats['scene_correct']}/{stats['total']} ({stats['scene_correct']/stats['total']*100:.0f}%)")
-    print(f"Shot accuracy: {stats['shot_correct']}/{stats['total']} ({stats['shot_correct']/stats['total']*100:.0f}%)")
-    print(f"Take accuracy: {stats['take_correct']}/{stats['total']} ({stats['take_correct']/stats['total']*100:.0f}%)")
-    print(f"Perfect matches: {stats['full_match']}/{stats['total']} ({stats['full_match']/stats['total']*100:.0f}%)")
+    # # Final stats
+    # print(f"\nFINAL RESULTS")
+    # print(f"Scene accuracy: {stats['scene_correct']}/{stats['total']} ({stats['scene_correct']/stats['total']*100:.0f}%)")
+    # print(f"Shot accuracy: {stats['shot_correct']}/{stats['total']} ({stats['shot_correct']/stats['total']*100:.0f}%)")
+    # print(f"Take accuracy: {stats['take_correct']}/{stats['total']} ({stats['take_correct']/stats['total']*100:.0f}%)")
+    # print(f"Perfect matches: {stats['full_match']}/{stats['total']} ({stats['full_match']/stats['total']*100:.0f}%)")
 
-    # image_files = list(slate_folder.glob("*.jpg")) + list(slate_folder.glob("*.png"))
-    # # # Preprocessed only:
-    # # image_files = list(slate_folder.glob("preprocessed_*.jpg")) + list(slate_folder.glob("preprocessed_*.png"))
+    image_files = list(slate_folder.glob("*.jpg")) + list(slate_folder.glob("*.png"))
+    # # Preprocessed only:
+    # image_files = list(slate_folder.glob("preprocessed_*.jpg")) + list(slate_folder.glob("preprocessed_*.png"))
     
-    # if not image_files:
-    #     print("No images found in test_data/slate_images/")
-    #     print("Please add some .jpg or .png slate images to test!")
-    #     exit(1)
+    if not image_files:
+        print("No images found in test_data/slate_images/")
+        print("Please add some .jpg or .png slate images to test!")
+        exit(1)
     
-    # print(f"Found {len(image_files)} images to test\n")
-    # print("="*50)
+    print(f"Found {len(image_files)} images to test\n")
+    print("="*50)
 
-    # success_scene = 0
-    # success_shot = 0
-    # success_take = 0
+    success_scene = 0
+    success_shot = 0
+    success_take = 0
 
-    # for img_file in image_files:
-    #     result = extract_slate_info(img_file)
-    #     if result:
-    #         if 'scene' in result:
-    #             success_scene += 1
-    #         if 'shot' in result:
-    #             success_shot += 1
-    #         if 'take' in result:
-    #             success_take += 1
-    #     print("-" * 50)
+    for img_file in image_files:
+        result = extract_slate_info(img_file)
+        if result:
+            if 'scene' in result:
+                success_scene += 1
+            if 'shot' in result:
+                success_shot += 1
+            if 'take' in result:
+                success_take += 1
+        print("-" * 50)
     
-    # print(f"\nRESULTS")
-    # print(f"Scene detected: {success_scene}/{len(image_files)} ({success_scene/len(image_files)*100:.0f}%)")
-    # print(f"Shot detected: {success_shot}/{len(image_files)} ({success_shot/len(image_files)*100:.0f}%)")
-    # print(f"Take detected: {success_take}/{len(image_files)} ({success_take/len(image_files)*100:.0f}%)")
+    print(f"\nRESULTS")
+    print(f"Scene detected: {success_scene}/{len(image_files)} ({success_scene/len(image_files)*100:.0f}%)")
+    print(f"Shot detected: {success_shot}/{len(image_files)} ({success_shot/len(image_files)*100:.0f}%)")
+    print(f"Take detected: {success_take}/{len(image_files)} ({success_take/len(image_files)*100:.0f}%)")
