@@ -21,11 +21,10 @@ def parse_data_from_filename(filename, include_extra_data = False):
         data["scene"] = split_name[0]
         data["take"] = split_name[1].replace("T", "")
         # I noticed occasionally I have a file like "18H T1 MOS"
-        if length == 3:
+        if length == 3 and include_extra_data:
             data["other"] = split_name[2]
 
     return data
-
 
 # quick test to see if it works
 if __name__ == "__main__":
