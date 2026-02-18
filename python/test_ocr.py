@@ -38,6 +38,59 @@ def preprocess_image(img):
 
   return normalized
 
+def parse_data_from_filename(filename, include_extra_data = False):
+    # Accept either a string or a pathlib.Path; operate on the name
+    if isinstance(filename, Path):
+        name = filename.stem
+    else:
+        name = Path(str(filename)).stem
+
+    split_name = name.split()
+    length = len(split_name)
+
+    data = {}
+
+    if length == 4:
+        # used for "98 E - 01" syntax
+        data["scene"] = "".join(split_name[0:2])
+        data["take"] = split_name[-1].lstrip("0")
+    elif length < 4:
+        # used for "17A T2" syntax
+        data["scene"] = split_name[0]
+        data["take"] = split_name[1].replace("T", "")
+        # I noticed occasionally I have a file like "18H T1 MOS"
+        if length == 3 and include_extra_data:
+            data["other"] = split_name[2]
+
+    return data
+
+def crop_rotated_box(image, obb_box):
+    """Crop rotated bounding box from image"""
+    
+    # Get 4 corner points
+    points = obb_box.xyxyxyxy[0].cpu().numpy().astype(np.float32)
+    
+    # Get bounding rectangle
+    rect = cv2.minAreaRect(points)
+    box = cv2.boxPoints(rect)
+    box = np.int0(box)
+    
+    # Get width and height of the rotated rect
+    width = int(rect[1][0])
+    height = int(rect[1][1])
+    
+    # Get rotation matrix
+    src_pts = box.astype("float32")
+    dst_pts = np.array([[0, height-1],
+                        [0, 0],
+                        [width-1, 0],
+                        [width-1, height-1]], dtype="float32")
+    
+    M = cv2.getPerspectiveTransform(src_pts, dst_pts)
+    warped = cv2.warpPerspective(image, M, (width, height))
+    
+    return warped
+
 def extract_slate_info(image_path, save_debug=False):
   """Test OCR on a single slate image"""
   
