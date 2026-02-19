@@ -91,6 +91,7 @@ def crop_rotated_box(image, obb_box):
     
     return warped
 
+# TODO: deprecate
 def extract_slate_info(image_path, save_debug=False):
   """Test OCR on a single slate image"""
   
@@ -151,6 +152,7 @@ def extract_slate_info(image_path, save_debug=False):
   
   return parsed_data
 
+# TODO: deprecate
 def load_labels():
   """Load ground truth labels"""
   labels_path = Path("test_data/slate_images/labels.json")
@@ -163,6 +165,7 @@ def load_labels():
   with open(labels_path, 'r') as f:
     return json.load(f)
     
+# TODO: rewrite
 def compare_results(predicted, expected):
   """Compare predicted vs expected values"""
   results = {

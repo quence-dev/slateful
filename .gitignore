@@ -21,6 +21,7 @@ ENV/
 
 # Keep slate images folder but ignore contents initially
 test_data/slate_images/*
+test_data/debug
 !test_data/slate_images/.gitkeep
 
 # macOS
